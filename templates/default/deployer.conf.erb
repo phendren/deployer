@@ -1,0 +1,66 @@
+<VirtualHost *:80>
+  ServerName <%= node[:deployer][:project_domain] %>
+  ServerAlias <%= node[:deployer][:project_dir] %>
+  DocumentRoot /var/www/html/<%= node[:deployer][:project_dir] %>/current/
+
+  <Directory /var/www/html/<%= node[:deployer][:project_dir] %>/current/>
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  <Directory ~ "\.svn">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  <Directory ~ "\.git">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  LogLevel info
+  ErrorLog /var/log/httpd/error_log
+  CustomLog /var/log/httpd/access_log combined
+  FileETag none
+
+  RewriteEngine On
+</VirtualHost>
+<VirtualHost *:443>
+  ServerName <%= node[:deployer][:project_domain] %>
+  ServerAlias <%= node[:deployer][:project_dir] %>
+  DocumentRoot /var/www/html/<%= node[:deployer][:project_dir] %>/current/
+
+  SSLEngine on
+  SSLProxyEngine on
+  SSLCertificateFile /etc/httpd/ssl/<%= node[:deployer][:ssl_cert] %>
+  SSLCertificateKeyFile /etc/httpd/ssl/<%= node[:deployer][:ssl_key] %>
+  SSLCACertificateFile /etc/httpd/ssl/<%= node[:deployer][:ssl_ca] %>
+  SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+
+  <Directory /var/www/html/<%= node[:deployer][:project_dir] %>/current/>
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  <Directory ~ "\.svn">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  <Directory ~ "\.git">
+    Order allow,deny
+    Deny from all
+  </Directory>
+
+  LogLevel info
+  ErrorLog /var/log/httpd/ssl_access_log
+  CustomLog /var/log/httpd/ssl_access_log combined
+  
+  FileETag none
+  RewriteEngine On
+</VirtualHost>
+
